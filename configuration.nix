@@ -46,7 +46,7 @@
   time.timeZone = "Asia/Kolkata";
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_IN";
+  i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_IN";
@@ -59,7 +59,17 @@
     LC_TELEPHONE = "en_IN";
     LC_TIME = "en_IN";
   };
-    
+      # Enable NixVim as your Neovim config
+  programs.nixvim.enable = true;
+  programs.nixvim.plugins.web-devicons.enable = true;
+  # Plugin example
+  programs.nixvim.plugins = {
+    lualine.enable = true;
+    telescope.enable = true;
+  };
+
+  # Optional: Set default editor
+  environment.variables.EDITOR = "nvim";    
   
 #flakes
   nix.settings.experimental-features =[ "nix-command" "flakes"];
@@ -141,7 +151,7 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -190,6 +200,7 @@
      lshw
      neovim
     btop
+    git
   ];
   
   programs.zsh.enable = true;
