@@ -59,14 +59,30 @@
     LC_TELEPHONE = "en_IN";
     LC_TIME = "en_IN";
   };
-      # Enable NixVim as your Neovim config
-  programs.nixvim.enable = true;
-  programs.nixvim.plugins.web-devicons.enable = true;
-  # Plugin example
-  programs.nixvim.plugins = {
+
+
+       # Enable NixVim as your Neovim config
+    programs.nixvim = {
+  enable = true;
+
+  # Enable theme
+  colorschemes.ayu = {
+    enable = true;
+    settings.mirage = true;
+  };
+
+  # Set basic editor options
+  opts = {
+    termguicolors = true;
+  };
+
+  # Plugins
+  plugins = {
+    web-devicons.enable = true;
     lualine.enable = true;
     telescope.enable = true;
   };
+};
 
   # Optional: Set default editor
   environment.variables.EDITOR = "nvim";    
