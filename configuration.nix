@@ -2,19 +2,23 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs,inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-       ./hardware-configuration.nix
-        inputs.home-manager.nixosModules.default
-    
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    inputs.home-manager.nixosModules.default
 
- ];
+  ];
 
   # Bootloader.
- # boot.loader.systemd-boot.enable = true;
+  # boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.timeout = 50;
 
@@ -60,35 +64,29 @@
     LC_TIME = "en_IN";
   };
 
-
-       # Enable NixVim as your Neovim config
-    programs.nixvim = {
-  enable = true;
-
-  # Enable theme
-  colorschemes.ayu = {
+  programs.nixvim = {
     enable = true;
-    settings.mirage = true;
-  };
 
-  # Set basic editor options
-  opts = {
-    termguicolors = true;
-  };
+    plugins = {
+      treesitter.enable = true;
+      lualine.enable = true;
+      telescope.enable = true;
+    };
 
-  # Plugins
-  plugins = {
-    web-devicons.enable = true;
-    lualine.enable = true;
-    telescope.enable = true;
+    options = {
+      number = true;
+      relativenumber = true;
+    };
   };
-};
 
   # Optional: Set default editor
-  environment.variables.EDITOR = "nvim";    
-  
-#flakes
-  nix.settings.experimental-features =[ "nix-command" "flakes"];
+  environment.variables.EDITOR = "nvim";
+
+  #flakes
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
@@ -97,9 +95,8 @@
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
-       
   # Load nvidia driver for Xorg and Wayland
-  services.xserver.videoDrivers = ["nvidia"];
+  services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
 
@@ -108,7 +105,7 @@
 
     # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
     # Enable this if you have graphical corruption issues or application crashes after waking
-    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead 
+    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead
     # of just the bare essentials.
     powerManagement.enable = false;
 
@@ -118,50 +115,43 @@
 
     # Use the NVidia open source kernel module (not to be confused with the
     # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of 
-    # supported GPUs is at: 
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
+    # Support is limited to the Turing and later architectures. Full list of
+    # supported GPUs is at:
+    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
     # Only available from driver 515.43.04+
     open = false;
 
     # Enable the Nvidia settings menu,
-	# accessible via `nvidia-settings`.
+    # accessible via `nvidia-settings`.
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
-  
 
+  hardware.nvidia.prime = {
+    offload = {
+      enable = true;
+      enableOffloadCmd = true;
+    };
+    # Make sure to use the correct Bus ID values for your system!
+    intelBusId = "PCI:0:2:0";
+    nvidiaBusId = "PCI:1:0:0";
+    # amdgpuBusId = "PCI:54:0:0"; For AMD GPU
+  };
 
-   
-	hardware.nvidia.prime = {
-		offload = {
-			enable = true;
-			enableOffloadCmd = true;
-		};
-		# Make sure to use the correct Bus ID values for your system!
-		intelBusId = "PCI:0:2:0";
-		nvidiaBusId = "PCI:1:0:0";
-                # amdgpuBusId = "PCI:54:0:0"; For AMD GPU
-	};
-
-    
-      
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
     variant = "";
   };
-   
 
-#bluetooth
-      services.dbus.enable = true;
+  #bluetooth
+  services.dbus.enable = true;
   services.blueman.enable = true;
   services.gvfs.enable = true;
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
-   
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -189,18 +179,21 @@
   users.users.astrix = {
     isNormalUser = true;
     description = "Nivas Aditya reddy";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-    #  thunderbird
+    extraGroups = [
+      "networkmanager"
+      "wheel"
     ];
-  }; 
-    home-manager= {
-      extraSpecialArgs   = { inherit inputs;};
- users = {
- 
-     "astrix" = import ./home.nix;
-                };
-         };
+    packages = with pkgs; [
+      #  thunderbird
+    ];
+  };
+  home-manager = {
+    extraSpecialArgs = { inherit inputs; };
+    users = {
+
+      "astrix" = import ./home.nix;
+    };
+  };
   # Install firefox.
   programs.firefox.enable = true;
 
@@ -210,15 +203,15 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
-     discord
-     lshw
-     neovim
+    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    #  wget
+    discord
+    lshw
+    neovim
     btop
     git
   ];
-  
+
   programs.zsh.enable = true;
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
